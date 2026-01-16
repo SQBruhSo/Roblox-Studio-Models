@@ -1,88 +1,409 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Mundos Roblox</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Chat System - Roblox</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial;
-            background: #1a1a1a;
-            color: white;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
-        
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Barra lateral */
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100vh;
+            position: fixed;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            color: #00adb5;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
         .menu {
-            background: #333;
-            padding: 10px;
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        
-        .menu a {
-            color: white;
-            margin-right: 15px;
+
+        .menu-item {
+            color: #fff;
             text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
         }
-        
-        .menu a:hover {
-            color: #4CAF50;
+
+        .menu-item:hover {
+            background: rgba(0, 173, 181, 0.2);
+            transform: translateX(5px);
         }
-        
-        .mundo {
-            background: #2a2a2a;
-            padding: 15px;
-            margin: 10px 0;
-            border-left: 4px solid #4CAF50;
+
+        .menu-item.active {
+            background: #00adb5;
+            box-shadow: 0 5px 15px rgba(0, 173, 181, 0.3);
         }
-        
-        .btn {
-            background: #4CAF50;
-            color: white;
-            padding: 8px 15px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
+
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
         }
-        
-        .btn:hover {
-            background: #45a049;
+
+        /* Contenido principal */
+        .content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 40px;
+            max-width: 1000px;
         }
-        
-        .seccion {
+
+        .section {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
-        
-        .activo {
+
+        .section.active {
             display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tarjeta principal */
+        .hero-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 173, 181, 0.3);
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-card h2 {
+            color: #00adb5;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hero-card h2 i {
+            font-size: 2.2rem;
+        }
+
+        .hero-card .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        /* Estadísticas */
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(0, 173, 181, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 173, 181, 0.2);
+            min-width: 150px;
+        }
+
+        .stat-item i {
+            font-size: 1.5rem;
+            color: #00adb5;
+            margin-bottom: 10px;
+        }
+
+        .stat-item .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stat-item .label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Botón de descarga */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #00adb5 0%, #0097a7 100%);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0, 173, 181, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 173, 181, 0.4);
+            background: linear-gradient(135deg, #0097a7 0%, #00838f 100%);
+        }
+
+        .download-btn i {
+            font-size: 1.4rem;
+        }
+
+        /* Información */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-card h3 {
+            color: #00adb5;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card ul {
+            padding-left: 20px;
+            color: #ccc;
+        }
+
+        .info-card li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .menu-item {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .hero-card {
+                padding: 25px;
+            }
+
+            .hero-card h2 {
+                font-size: 2rem;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            .stat-item {
+                min-width: 120px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="menu">
-        <a href="#" onclick="mostrarSeccion('inicio')">Inicio</a>
-        <a href="#" onclick="mostrarSeccion('mundos')">Mundos</a>
-        <a href="#" onclick="mostrarSeccion('info')">Info</a>
-    </div>
+    <!-- Barra lateral -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1><i class="fas fa-gamepad"></i> Roblox Worlds</h1>
+        </div>
+        
+        <nav class="menu">
+            <a href="#" class="menu-item active" onclick="mostrarSeccion('inicio')">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="#" class="menu-item" onclick="mostrarSeccion('descargar')">
+                <i class="fas fa-download"></i> Descargar
+            </a>
+            <a href="#" class="menu-item" onclick="mostrarSeccion('info')">
+                <i class="fas fa-info-circle"></i> Información
+            </a>
+        </nav>
+    </aside>
 
-    <div id="inicio" class="seccion activo">
-        <h1>Mundos Roblox</h1>
-        <p>Descarga mundos para Roblox Studio.</p>
-        <p>Selecciona "Mundos" en el menú.</p>
-    </div>
+    <!-- Contenido principal -->
+    <main class="content">
+        <!-- Sección Inicio -->
+        <section id="inicio" class="section active">
+            <div class="hero-card">
+                <h2><i class="fas fa-comments"></i> Custom Chat System</h2>
+                <p class="description">
+                    Un sistema de chat personalizado para Roblox con características avanzadas. 
+                    Incluye comandos personalizados, interfaz moderna y configuración flexible.
+                </p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <i class="fas fa-weight-hanging"></i>
+                        <div class="value">4.2 MB</div>
+                        <div class="label">Tamaño</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-calendar"></i>
+                        <div class="value" id="fecha-actual"></div>
+                        <div class="label">Actualizado</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-download"></i>
+                        <div class="value" id="contador-descargas">0</div>
+                        <div class="label">Descargas</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-file-code"></i>
+                        <div class="value">.rbxl</div>
+                        <div class="label">Formato</div>
+                    </div>
+                </div>
+                
+                <button class="download-btn" onclick="descargarMundo()">
+                    <i class="fas fa-download"></i> Descargar Ahora
+                </button>
+            </div>
+        </section>
 
-    <div id="mundos" class="seccion">
-        <h2>Mundos para descargar</h2>
-        <div id="lista-mundos"></div>
-    </div>
+        <!-- Sección Descargar -->
+        <section id="descargar" class="section">
+            <div class="hero-card">
+                <h2><i class="fas fa-cloud-download-alt"></i> Descargar Mundo</h2>
+                <p class="description">
+                    Haz clic en el botón para descargar el archivo CustomChatSystem.rbxl. 
+                    Después de descargar, ábrelo con Roblox Studio.
+                </p>
+                
+                <div style="text-align: center; margin: 40px 0;">
+                    <div style="font-size: 5rem; color: #00adb5; margin-bottom: 20px;">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <h3 style="color: #00adb5; margin-bottom: 10px;">CustomChatSystem.rbxl</h3>
+                    <p style="color: #ccc; margin-bottom: 30px;">4.2 MB • Archivo Roblox</p>
+                    
+                    <a href="worlds/CustomChatSystem.rbxl" class="download-btn" download onclick="registrarDescarga()">
+                        <i class="fas fa-download"></i> Descargar
+                    </a>
+                </div>
+            </div>
+        </section>
 
-    <div id="info" class="seccion">
-        <h2>Información</h2>
-        <p><strong>Cómo usar:</strong></p>
-        <p>1. Descarga el archivo .rbxl</p>
-        <p>2. Abre Roblox Studio</p>
-        <p>3. Archivo → Abrir</p>
-        <p>4. Selecciona el archivo</p>
-        <p>5. ¡Listo para editar!</p>
-    </div>
+        <!-- Sección Información -->
+        <section id="info" class="section">
+            <div class="hero-card">
+                <h2><i class="fas fa-book"></i> Información</h2>
+                <p class="description">
+                    Instrucciones y detalles sobre cómo usar el Custom Chat System en Roblox Studio.
+                </p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-laptop-code"></i> Cómo usar</h3>
+                        <ul>
+                            <li>Descarga el archivo .rbxl</li>
+                            <li>Abre Roblox Studio</li>
+                            <li>Ve a "Archivo" → "Abrir"</li>
+                            <li>Selecciona el archivo descargado</li>
+                            <li>¡Listo para personalizar!</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3><i class="fas fa-star"></i> Características</h3>
+                        <ul>
+                            <li>Sistema de chat personalizable</li>
+                            <li>Comandos personalizados</li>
+                            <li>Interfaz moderna</li>
+                            <li>Fácil de modificar</li>
+                            <li>Compatible con Roblox Studio</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3><i class="fas fa-question-circle"></i> Requisitos</h3>
+                        <ul>
+                            <li>Roblox Studio instalado</li>
+                            <li>Windows 10/11 o macOS</li>
+                            <li>Conexión a internet</li>
+                            <li>Conocimientos básicos de Roblox Studio</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
