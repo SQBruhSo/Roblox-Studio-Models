@@ -7,124 +7,8 @@ const models = [
         description: "Custom chat system for Roblox with advanced commands and configuration.",
         size: null // Will be detected automatically
     }
-    // Add more models here:
-    // {
-    //     id: 2,
-    //     name: "Another Model",
-    //     filename: "another_model.rbxl",
-    //     description: "Description here",
-    //     size: null
-    // }
+    // Add more models here if needed
 ];
-
-// ===== TRANSLATIONS =====
-const translations = {
-    en: {
-        home: "Home",
-        models: "Models",
-        configs: "Configs",
-        welcome: "Welcome to RSM",
-        welcomeText: "Portal to download models created in Roblox Studio.",
-        selectModels: "Select 'Models' in the sidebar to view available models.",
-        selectConfigs: "Select 'Configs' to customize your experience.",
-        availableModels: "Available Models",
-        clickDownload: "Click 'Download' to get the .rbxl file.",
-        configuration: "Configuration",
-        customize: "Customize your experience.",
-        appearance: "Appearance",
-        darkLight: "Dark/Light Mode",
-        primaryColor: "Primary Color",
-        language: "Language",
-        interfaceLanguage: "Interface Language",
-        data: "Data",
-        resetCounters: "Reset Download Counters",
-        autoDetect: "Auto-detect file sizes",
-        download: "Download",
-        downloads: "Downloads",
-        format: "Format",
-        size: "Size",
-        totalModels: "Models",
-        totalSize: "Total Size",
-        reset: "Reset",
-        noModels: "No models available.",
-        detecting: "Detecting...",
-        green: "Green",
-        blue: "Blue",
-        purple: "Purple",
-        orange: "Orange",
-        red: "Red"
-    },
-    es: {
-        home: "Inicio",
-        models: "Modelos",
-        configs: "Configs",
-        welcome: "Bienvenido a RSM",
-        welcomeText: "Portal para descargar modelos creados en Roblox Studio.",
-        selectModels: "Selecciona 'Modelos' en la barra lateral para ver los modelos disponibles.",
-        selectConfigs: "Selecciona 'Configs' para personalizar tu experiencia.",
-        availableModels: "Modelos Disponibles",
-        clickDownload: "Haz clic en 'Descargar' para obtener el archivo .rbxl.",
-        configuration: "Configuración",
-        customize: "Personaliza tu experiencia.",
-        appearance: "Apariencia",
-        darkLight: "Modo Oscuro/Claro",
-        primaryColor: "Color Principal",
-        language: "Idioma",
-        interfaceLanguage: "Idioma de Interfaz",
-        data: "Datos",
-        resetCounters: "Reiniciar Contadores de Descarga",
-        autoDetect: "Detección automática de tamaños",
-        download: "Descargar",
-        downloads: "Descargas",
-        format: "Formato",
-        size: "Tamaño",
-        totalModels: "Modelos",
-        totalSize: "Tamaño Total",
-        reset: "Reiniciar",
-        noModels: "No hay modelos disponibles.",
-        detecting: "Detectando...",
-        green: "Verde",
-        blue: "Azul",
-        purple: "Púrpura",
-        orange: "Naranja",
-        red: "Rojo"
-    },
-    pt: {
-        home: "Início",
-        models: "Modelos",
-        configs: "Configs",
-        welcome: "Bem-vindo ao RSM",
-        welcomeText: "Portal para baixar modelos criados no Roblox Studio.",
-        selectModels: "Selecione 'Modelos' na barra lateral para ver os modelos disponíveis.",
-        selectConfigs: "Selecione 'Configs' para personalizar sua experiência.",
-        availableModels: "Modelos Disponíveis",
-        clickDownload: "Clique em 'Baixar' para obter o arquivo .rbxl.",
-        configuration: "Configuração",
-        customize: "Personalize sua experiência.",
-        appearance: "Aparência",
-        darkLight: "Modo Escuro/Claro",
-        primaryColor: "Cor Principal",
-        language: "Idioma",
-        interfaceLanguage: "Idioma da Interface",
-        data: "Dados",
-        resetCounters: "Redefinir Contadores de Download",
-        autoDetect: "Detecção automática de tamanhos",
-        download: "Baixar",
-        downloads: "Downloads",
-        format: "Formato",
-        size: "Tamanho",
-        totalModels: "Modelos",
-        totalSize: "Tamanho Total",
-        reset: "Redefinir",
-        noModels: "Nenhum modelo disponível.",
-        detecting: "Detectando...",
-        green: "Verde",
-        blue: "Azul",
-        purple: "Roxo",
-        orange: "Laranja",
-        red: "Vermelho"
-    }
-};
 
 // ===== APP STATE =====
 let currentSection = 'home';
@@ -141,161 +25,99 @@ const defaultSettings = {
 
 // ===== INITIALIZE APP =====
 function initApp() {
-    // Merge default settings with saved settings
+    console.log('Initializing RSM App...');
+    
+    // Merge with default settings
     settings = { ...defaultSettings, ...settings };
     
-    // Apply saved settings to UI
+    // Apply saved settings
     applySettings();
     
-    // Setup event listeners
+    // Setup all event listeners
     setupEventListeners();
     
-    // Load models with auto size detection
+    // Load models immediately
     loadModels(true);
     
     // Update statistics
     updateStats();
     
-    // Check URL hash for initial section
+    // Check URL for section
     checkUrlHash();
     
-    console.log('RSM initialized successfully');
+    console.log('RSM App initialized successfully');
 }
 
-// ===== APPLY SETTINGS TO UI =====
+// ===== APPLY SETTINGS =====
 function applySettings() {
+    console.log('Applying settings:', settings);
+    
     // Apply theme
+    const themeToggle = document.getElementById('theme-toggle');
     if (settings.theme === 'light') {
         document.body.classList.add('light-mode');
-        const themeToggle = document.getElementById('theme-toggle');
         if (themeToggle) themeToggle.checked = true;
     }
     
-    // Apply primary color - CORREGIDO: funciona en ambos modos
+    // Apply primary color
     if (settings.primaryColor) {
-        updatePrimaryColor(settings.primaryColor);
+        document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
         const colorSelect = document.getElementById('color-select');
         if (colorSelect) colorSelect.value = settings.primaryColor;
+        updateHoverColor(settings.primaryColor);
     }
     
     // Apply language
     const languageSelect = document.getElementById('language-select');
     if (languageSelect) {
         languageSelect.value = settings.language;
-        // Actualizar textos inmediatamente
-        updateLanguage(settings.language);
     }
     
-    // Apply auto-size setting
+    // Apply auto-size
     const autoSizeToggle = document.getElementById('auto-size');
-    if (autoSizeToggle) autoSizeToggle.checked = settings.autoSize;
+    if (autoSizeToggle) {
+        autoSizeToggle.checked = settings.autoSize !== false;
+    }
 }
 
-// ===== UPDATE PRIMARY COLOR (CORREGIDO) =====
-function updatePrimaryColor(color) {
-    // Guardar el color
-    settings.primaryColor = color;
-    
-    // Aplicar a CSS variables - FUNCIONA EN AMBOS MODOS
-    document.documentElement.style.setProperty('--primary-color', color);
-    
-    // Calcular color hover (más oscuro)
-    const hoverColor = darkenColor(color, 20);
-    document.documentElement.style.setProperty('--primary-hover', hoverColor);
-    
-    // Guardar configuración
-    saveSettings();
-}
-
-// ===== DARKEN COLOR HELPER =====
-function darkenColor(color, percent) {
-    // Convierte color hex a RGB
-    let r = parseInt(color.slice(1, 3), 16);
-    let g = parseInt(color.slice(3, 5), 16);
-    let b = parseInt(color.slice(5, 7), 16);
-    
-    // Oscurece cada componente
-    r = Math.floor(r * (100 - percent) / 100);
-    g = Math.floor(g * (100 - percent) / 100);
-    b = Math.floor(b * (100 - percent) / 100);
-    
-    // Convierte de vuelta a hex
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-}
-
-// ===== UPDATE LANGUAGE =====
-function updateLanguage(lang) {
-    if (!translations[lang]) {
-        console.error(`Language ${lang} not supported`);
-        return;
-    }
-    
-    settings.language = lang;
-    const t = translations[lang];
-    
-    // Actualizar textos de navegación
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (t[key]) {
-            element.textContent = t[key];
-        }
-    });
-    
-    // Actualizar placeholders y otros atributos
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        if (t[key]) {
-            element.placeholder = t[key];
-        }
-    });
-    
-    // Actualizar opciones de color en el select
-    const colorSelect = document.getElementById('color-select');
-    if (colorSelect) {
-        const options = colorSelect.querySelectorAll('option');
-        options[0].textContent = t.green || 'Green';
-        options[1].textContent = t.blue || 'Blue';
-        options[2].textContent = t.purple || 'Purple';
-        options[3].textContent = t.orange || 'Orange';
-        options[4].textContent = t.red || 'Red';
-    }
-    
-    // Actualizar botón de reset
-    const resetBtn = document.getElementById('reset-btn');
-    if (resetBtn) {
-        resetBtn.textContent = t.reset || 'Reset';
-    }
-    
-    // Actualizar botones de descarga en modelos
-    document.querySelectorAll('.download-btn').forEach(btn => {
-        if (!btn.hasAttribute('data-i18n-ignore')) {
-            btn.textContent = t.download || 'Download';
-        }
-    });
-    
-    // Guardar configuración
-    saveSettings();
-    
-    // Recargar modelos para actualizar textos
-    if (currentSection === 'models') {
-        loadModels();
+// ===== UPDATE HOVER COLOR =====
+function updateHoverColor(color) {
+    try {
+        const hex = color.replace('#', '');
+        if (hex.length !== 6) return;
+        
+        const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 30);
+        const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 30);
+        const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 30);
+        
+        const hoverColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        document.documentElement.style.setProperty('--primary-hover', hoverColor);
+    } catch (error) {
+        console.warn('Error updating hover color:', error);
     }
 }
 
 // ===== SETUP EVENT LISTENERS =====
 function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
     // Navigation menu
     const menuLinks = document.querySelectorAll('.menu-link');
     menuLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Update active link
+            // Remove active from all
             menuLinks.forEach(l => l.classList.remove('active'));
+            
+            // Add active to clicked
             this.classList.add('active');
             
-            // Get and show section
+            // Get section
             const section = this.getAttribute('data-section');
+            console.log('Navigating to:', section);
+            
+            // Show section
             showSection(section);
             
             // Update URL
@@ -303,10 +125,11 @@ function setupEventListeners() {
         });
     });
     
-    // Theme toggle - CORREGIDO
+    // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('change', function() {
+            console.log('Theme toggled:', this.checked ? 'light' : 'dark');
             if (this.checked) {
                 document.body.classList.add('light-mode');
                 settings.theme = 'light';
@@ -314,29 +137,31 @@ function setupEventListeners() {
                 document.body.classList.remove('light-mode');
                 settings.theme = 'dark';
             }
-            
-            // Re-aplicar el color principal (importante para modo claro)
-            if (settings.primaryColor) {
-                updatePrimaryColor(settings.primaryColor);
-            }
-            
             saveSettings();
         });
     }
     
-    // Color select - CORREGIDO
+    // Color select
     const colorSelect = document.getElementById('color-select');
     if (colorSelect) {
         colorSelect.addEventListener('change', function() {
-            updatePrimaryColor(this.value);
+            const color = this.value;
+            console.log('Color changed to:', color);
+            document.documentElement.style.setProperty('--primary-color', color);
+            updateHoverColor(color);
+            settings.primaryColor = color;
+            saveSettings();
         });
     }
     
-    // Language select - CORREGIDO
+    // Language select
     const languageSelect = document.getElementById('language-select');
     if (languageSelect) {
         languageSelect.addEventListener('change', function() {
-            updateLanguage(this.value);
+            settings.language = this.value;
+            console.log('Language changed to:', this.value);
+            saveSettings();
+            // Language change logic would go here
         });
     }
     
@@ -344,22 +169,22 @@ function setupEventListeners() {
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', function() {
-            const t = translations[settings.language] || translations.en;
-            if (confirm(t.resetCounters ? t.resetCounters + '?' : 'Reset all download counters?')) {
+            if (confirm('Reset all download counters?')) {
                 downloads = {};
                 localStorage.setItem('rsm_downloads', JSON.stringify(downloads));
                 loadModels();
                 updateStats();
-                alert(t.resetCounters ? '¡Contadores reiniciados!' : 'Counters reset!');
+                alert('Download counters reset!');
             }
         });
     }
     
-    // Auto size toggle
+    // Auto-size toggle
     const autoSizeToggle = document.getElementById('auto-size');
     if (autoSizeToggle) {
         autoSizeToggle.addEventListener('change', function() {
             settings.autoSize = this.checked;
+            console.log('Auto-size:', this.checked ? 'enabled' : 'disabled');
             saveSettings();
             if (this.checked) {
                 loadModels(true);
@@ -367,16 +192,18 @@ function setupEventListeners() {
         });
     }
     
-    // Listen for hash changes (back/forward buttons)
+    // Hash change listener
     window.addEventListener('hashchange', checkUrlHash);
+    
+    console.log('Event listeners setup complete');
 }
 
 // ===== CHECK URL HASH =====
 function checkUrlHash() {
     const hash = window.location.hash.substring(1);
-    const validSections = ['home', 'models', 'configs'];
+    console.log('URL hash detected:', hash);
     
-    if (hash && validSections.includes(hash)) {
+    if (hash && ['home', 'models', 'configs'].includes(hash)) {
         // Update menu
         document.querySelectorAll('.menu-link').forEach(link => {
             link.classList.remove('active');
@@ -387,7 +214,7 @@ function checkUrlHash() {
         
         // Show section
         showSection(hash);
-    } else if (!hash) {
+    } else {
         // Default to home
         showSection('home');
     }
@@ -395,23 +222,26 @@ function checkUrlHash() {
 
 // ===== SHOW SECTION =====
 function showSection(section) {
+    console.log('Showing section:', section);
+    
     // Hide all sections
-    document.querySelectorAll('.section').forEach(sec => {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(sec => {
         sec.classList.remove('active');
     });
     
-    // Show selected section
+    // Show target section
     const targetSection = document.getElementById(section);
     if (targetSection) {
         targetSection.classList.add('active');
         currentSection = section;
         
         // Update page title
-        const t = translations[settings.language] || translations.en;
-        document.title = `RSM - ${t[section] || capitalize(section)}`;
+        document.title = `RSM - ${section.charAt(0).toUpperCase() + section.slice(1)}`;
         
         // Load models if needed
         if (section === 'models') {
+            console.log('Loading models for models section...');
             loadModels();
         }
         
@@ -427,70 +257,68 @@ async function loadModels(detectSize = false) {
     const container = document.getElementById('models-container');
     
     if (!container) {
-        console.error('Models container not found');
+        console.error('ERROR: models-container not found!');
         return;
     }
+    
+    console.log('Loading models... Container found:', !!container);
+    console.log('Number of models:', models.length);
     
     // Clear container
     container.innerHTML = '';
     
-    // Get current translations
-    const t = translations[settings.language] || translations.en;
-    
     // Show message if no models
     if (models.length === 0) {
-        container.innerHTML = `<p style="color: var(--text-secondary); padding: 20px; text-align: center;">${t.noModels}</p>`;
+        container.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No models available.</p>';
+        console.log('No models to display');
         return;
     }
     
-    // Load each model
-    const modelPromises = models.map(async (model) => {
+    // Process each model
+    for (const model of models) {
+        console.log('Processing model:', model.name);
+        
         // Detect file size if enabled
         if (detectSize && settings.autoSize !== false) {
             try {
+                console.log('Detecting size for:', model.filename);
                 const size = await getFileSize(`worlds/${model.filename}`);
                 model.size = size;
+                console.log('Size detected:', size);
             } catch (error) {
-                model.size = t.detecting || 'Detecting...';
-                console.warn(`Could not detect size for ${model.filename}:`, error);
+                model.size = 'Unknown';
+                console.warn('Could not detect size:', error);
             }
         }
         
         // Create model card
-        return createModelCard(model, t);
-    });
+        const card = createModelCard(model);
+        if (card) {
+            container.appendChild(card);
+        }
+    }
     
-    // Wait for all models to load
-    const modelCards = await Promise.all(modelPromises);
-    
-    // Add cards to container
-    modelCards.forEach(card => {
-        if (card) container.appendChild(card);
-    });
-    
-    console.log(`Loaded ${models.length} models`);
+    console.log('Models loaded successfully');
 }
 
 // ===== CREATE MODEL CARD =====
-function createModelCard(model, t) {
+function createModelCard(model) {
     const card = document.createElement('div');
     card.className = 'model-card';
     
     const downloadCount = downloads[model.id] || 0;
-    const sizeText = model.size || (t.detecting || 'Detecting...');
     
     card.innerHTML = `
         <h3>${model.name}</h3>
         <p>${model.description}</p>
         <div class="model-info">
-            <span><strong>${t.size || 'Size'}:</strong> ${sizeText}</span>
-            <span><strong>${t.downloads || 'Downloads'}:</strong> ${downloadCount}</span>
-            <span><strong>${t.format || 'Format'}:</strong> .rbxl</span>
+            <span><strong>Size:</strong> ${model.size || 'Loading...'}</span>
+            <span><strong>Downloads:</strong> ${downloadCount}</span>
+            <span><strong>Format:</strong> .rbxl</span>
         </div>
         <a href="worlds/${model.filename}" class="download-btn" download 
-           onclick="registerDownload(${model.id}); return true;"
-           data-i18n-ignore="true">
-            ${t.download || 'Download'}
+           onclick="RSM.registerDownload(${model.id}); return true;">
+            Download
         </a>
     `;
     
@@ -499,30 +327,38 @@ function createModelCard(model, t) {
 
 // ===== GET FILE SIZE =====
 async function getFileSize(url) {
-    try {
-        // Try to get file size via HEAD request
-        const response = await fetch(url, { method: 'HEAD' });
-        
-        if (response.ok) {
-            const sizeBytes = response.headers.get('content-length');
-            
-            if (sizeBytes) {
-                return formatSize(parseInt(sizeBytes));
-            }
-        }
-        
-        // Fallback: try to get actual file
-        const fallbackResponse = await fetch(url);
-        if (fallbackResponse.ok) {
-            const blob = await fallbackResponse.blob();
-            return formatSize(blob.size);
-        }
-        
-        return 'Unknown';
-    } catch (error) {
-        console.error('Error getting file size for', url, error);
-        return 'Unknown';
-    }
+    return new Promise((resolve) => {
+        // Try HEAD request first
+        fetch(url, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    const size = response.headers.get('content-length');
+                    if (size) {
+                        resolve(formatSize(parseInt(size)));
+                        return;
+                    }
+                }
+                // Fallback to fetch with blob
+                return fetch(url);
+            })
+            .then(response => {
+                if (response && response.ok) {
+                    return response.blob();
+                }
+                return null;
+            })
+            .then(blob => {
+                if (blob) {
+                    resolve(formatSize(blob.size));
+                } else {
+                    resolve('Unknown');
+                }
+            })
+            .catch(error => {
+                console.warn('File size detection failed:', error);
+                resolve('Unknown');
+            });
+    });
 }
 
 // ===== FORMAT SIZE =====
@@ -539,6 +375,8 @@ function formatSize(bytes) {
 
 // ===== REGISTER DOWNLOAD =====
 function registerDownload(modelId) {
+    console.log('Registering download for model:', modelId);
+    
     // Increment counter
     if (!downloads[modelId]) downloads[modelId] = 0;
     downloads[modelId]++;
@@ -549,26 +387,22 @@ function registerDownload(modelId) {
     // Update stats
     updateStats();
     
-    // Recargar modelos para actualizar contador
-    setTimeout(() => loadModels(), 100);
+    // Reload models to update counter display
+    if (currentSection === 'models') {
+        setTimeout(() => loadModels(), 100);
+    }
     
-    console.log(`Download registered for model ${modelId}. Total: ${downloads[modelId]}`);
+    console.log(`Model ${modelId} downloaded ${downloads[modelId]} times`);
 }
 
 // ===== UPDATE STATISTICS =====
 function updateStats() {
-    const t = translations[settings.language] || translations.en;
+    console.log('Updating statistics...');
     
     // Total models
     const totalModelsEl = document.getElementById('total-models');
     if (totalModelsEl) {
         totalModelsEl.textContent = models.length;
-    }
-    
-    // Total size label
-    const totalSizeLabel = document.querySelector('.stat-label');
-    if (totalSizeLabel && !totalSizeLabel.hasAttribute('data-i18n')) {
-        totalSizeLabel.textContent = t.totalSize || 'Total Size';
     }
     
     // Calculate total size
@@ -583,55 +417,61 @@ function updateStats() {
 // ===== CALCULATE TOTAL SIZE =====
 async function calculateTotalSize() {
     let totalBytes = 0;
+    let processed = 0;
     
     for (const model of models) {
         if (model.size && model.size !== 'Unknown') {
-            // Parse the size string (e.g., "4.2 MB")
             const match = model.size.match(/(\d+\.?\d*)\s*(B|KB|MB|GB)/i);
-            
             if (match) {
                 let bytes = parseFloat(match[1]);
                 const unit = match[2].toUpperCase();
                 
-                // Convert to bytes
                 switch(unit) {
                     case 'GB': bytes *= 1024 * 1024 * 1024; break;
                     case 'MB': bytes *= 1024 * 1024; break;
                     case 'KB': bytes *= 1024; break;
-                    // 'B' already in bytes
                 }
                 
                 totalBytes += bytes;
+                processed++;
             }
         }
     }
     
+    console.log(`Processed ${processed} model sizes, total: ${totalBytes} bytes`);
     return formatSize(totalBytes);
 }
 
 // ===== SAVE SETTINGS =====
 function saveSettings() {
     localStorage.setItem('rsm_settings', JSON.stringify(settings));
-}
-
-// ===== HELPER FUNCTIONS =====
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    console.log('Settings saved:', settings);
 }
 
 // ===== PUBLIC API =====
 window.RSM = {
+    initApp,
     registerDownload,
     loadModels,
     updateStats,
     showSection,
-    updateLanguage,
-    updatePrimaryColor
+    getFileSize,
+    formatSize
 };
 
-// ===== INITIALIZE WHEN DOCUMENT IS READY =====
+// ===== INITIALIZE =====
+// Wait for DOM to be fully loaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded, initializing app...');
+        initApp();
+    });
 } else {
+    console.log('DOM already loaded, initializing app...');
     initApp();
 }
+
+// Debug info
+console.log('RSM script loaded successfully');
+console.log('Models configured:', models.length);
+console.log('Current settings:', settings);
