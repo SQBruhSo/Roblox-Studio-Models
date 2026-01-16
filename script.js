@@ -6,27 +6,9 @@ const mundos = [
         archivo: "ciudad_moderna.rbxl",
         descripcion: "Una ciudad completa con edificios, calles y vehículos. Perfecta para juegos de rol urbano.",
         tamano: "12.5 MB",
-        fecha: "2024-01-10",
+        fecha: "2025-01-16",
         descargas: 0
     },
-    {
-        id: 2,
-        titulo: "Castillo Medieval",
-        archivo: "castillo_medieval.rbxl",
-        descripcion: "Castillo con murallas, torres y mazmorras. Incluye pueblo y bosques alrededor.",
-        tamano: "8.3 MB",
-        fecha: "2024-01-05",
-        descargas: 0
-    },
-    {
-        id: 3,
-        titulo: "Base Espacial",
-        archivo: "base_espacial.rbxl",
-        descripcion: "Estación espacial en órbita con hangares, laboratorios y vista al espacio exterior.",
-        tamano: "18.7 MB",
-        fecha: "2024-01-01",
-        descargas: 0
-    }
     // Añade más mundos aquí...
 ];
 
