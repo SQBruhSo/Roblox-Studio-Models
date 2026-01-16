@@ -62,7 +62,10 @@
             gap: 8px;
         }
 
-        .menu a {
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             color: var(--text-color);
             text-decoration: none;
             padding: 12px 15px;
@@ -74,15 +77,34 @@
             cursor: pointer;
         }
 
-        .menu a:hover {
+        .menu-item:hover {
             background: var(--primary-color);
             color: white;
         }
 
-        .menu a.active {
+        .menu-item:hover .menu-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .menu-item.active {
             background: var(--primary-color);
             color: white;
             font-weight: bold;
+        }
+
+        .menu-item.active .menu-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            transition: filter 0.3s;
+        }
+
+        .menu-text {
+            flex-grow: 1;
         }
 
         .content {
@@ -356,7 +378,7 @@
                 justify-content: center;
             }
 
-            .menu a {
+            .menu-item {
                 padding: 10px 15px;
                 font-size: calc(var(--font-size) * 0.9);
             }
@@ -372,10 +394,22 @@
     <div class="sidebar">
         <h2>Roblox Studio Models</h2>
         <nav class="menu">
-            <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png"><a href="#" class="menu-link active" onclick="showSection('home'); return false;">Home</a>
-            <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png"><a href="#" class="menu-link" onclick="showSection('models'); return false;">Models</a>
-            <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png"><a href="#" class="menu-link" onclick="showSection('links'); return false;">Links</a>
-            <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png"><a href="#" class="menu-link" onclick="showSection('settings'); return false;">Settings</a>
+            <a href="#" class="menu-item active" onclick="showSection('home'); return false;">
+                <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png" class="menu-icon" alt="Home">
+                <span class="menu-text">Home</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('models'); return false;">
+                <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png" class="menu-icon" alt="Models">
+                <span class="menu-text">Models</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('links'); return false;">
+                <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png" class="menu-icon" alt="Links">
+                <span class="menu-text">Links</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('settings'); return false;">
+                <img src="https://cdn-icons-png.freepik.com/512/9046/9046107.png" class="menu-icon" alt="Settings">
+                <span class="menu-text">Settings</span>
+            </a>
         </nav>
     </div>
 
@@ -561,6 +595,17 @@
                 }
                 saveSettings();
             });
+            
+            // Update menu items to work with new structure
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Remove active class from all items
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                });
+            });
         }
 
         // ===== SHOW SECTION =====
@@ -568,12 +613,12 @@
             console.log('📄 Showing section:', section);
             
             // Update menu
-            document.querySelectorAll('.menu-link').forEach(link => {
-                link.classList.remove('active');
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
             });
             
             // Mark active link
-            document.querySelector(`.menu-link[onclick*="${section}"]`).classList.add('active');
+            document.querySelector(`.menu-item[onclick*="${section}"]`).classList.add('active');
             
             // Hide all sections
             document.querySelectorAll('.section').forEach(sec => {
@@ -715,26 +760,6 @@
         function updateStats() {
             // Total models
             document.getElementById('total-models').textContent = models.length;
-            
-            // Calculate total size
-            let totalBytes = 0;
-            models.forEach(model => {
-                if (model.size && model.size !== 'Unknown') {
-                    const match = model.size.match(/(\d+\.?\d*)\s*(B|KB|MB|GB)/);
-                    if (match) {
-                        let bytes = parseFloat(match[1]);
-                        const unit = match[2];
-                        
-                        if (unit === 'MB') bytes *= 1024 * 1024;
-                        else if (unit === 'KB') bytes *= 1024;
-                        else if (unit === 'GB') bytes *= 1024 * 1024 * 1024;
-                        
-                        totalBytes += bytes;
-                    }
-                }
-            });
-            
-            document.getElementById('total-size').textContent = formatSize(totalBytes);
         }
 
         // ===== SAVE SETTINGS =====
