@@ -5,126 +5,174 @@
     <title>Mundos Roblox</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: #1a1a1a;
             color: white;
             margin: 0;
+            padding: 0;
         }
-        
+
         .sidebar {
             width: 200px;
             background: #252525;
             padding: 20px;
             height: 100vh;
             position: fixed;
+            left: 0;
+            top: 0;
         }
-        
+
         .sidebar h2 {
             color: #4CAF50;
-            margin-bottom: 30px;
+            margin: 0 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
         }
-        
+
         .menu {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
-        
+
         .menu a {
             color: white;
             text-decoration: none;
             padding: 12px 15px;
-            border-radius: 5px;
+            border-radius: 6px;
             background: #333;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
-        
+
         .menu a:hover {
-            background: #444;
+            background: #3a3a3a;
         }
-        
+
         .menu a.active {
             background: #4CAF50;
             font-weight: bold;
         }
-        
+
         .content {
             margin-left: 240px;
-            padding: 30px;
+            padding: 40px;
+            min-height: 100vh;
         }
-        
+
         .section {
             display: none;
         }
-        
+
         .section.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
-        
-        .mundo {
-            background: #2a2a2a;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            border-left: 4px solid #4CAF50;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        
-        .mundo h3 {
+
+        h1 {
             color: #4CAF50;
-            margin: 0 0 10px 0;
+            margin: 0 0 20px 0;
         }
-        
-        .btn {
+
+        p {
+            color: #ccc;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .world-container {
+            margin-top: 30px;
+        }
+
+        .world-card {
+            background: #2a2a2a;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+
+        .world-card h3 {
+            color: #4CAF50;
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+
+        .world-info {
+            display: flex;
+            gap: 30px;
+            margin: 15px 0;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .download-btn {
+            display: inline-block;
             background: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 15px;
             border: none;
             cursor: pointer;
+            font-size: 1em;
         }
-        
-        .btn:hover {
+
+        .download-btn:hover {
             background: #45a049;
         }
-        
+
         .config-item {
             background: #2a2a2a;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-width: 600px;
         }
-        
+
         .config-item h3 {
             color: #4CAF50;
-            margin: 0 0 10px 0;
+            margin: 0 0 15px 0;
         }
-        
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin: 20px 0;
+
+        .config-item ul {
+            padding-left: 20px;
+            color: #ccc;
         }
-        
-        .stat {
-            background: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 100px;
+
+        .config-item li {
+            margin: 8px 0;
         }
-        
-        .stat .num {
-            font-size: 1.5rem;
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        .stat .label {
-            font-size: 0.9rem;
-            color: #aaa;
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 15px;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .menu a {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -133,74 +181,68 @@
     <div class="sidebar">
         <h2>Roblox Worlds</h2>
         <nav class="menu">
-            <a href="#inicio" class="active">Inicio</a>
-            <a href="#descargas">Mundos</a>
-            <a href="#config">Config</a>
+            <a href="#inicio" class="menu-link active">Inicio</a>
+            <a href="#mundos" class="menu-link">Mundos</a>
+            <a href="#config" class="menu-link">Configuración</a>
         </nav>
     </div>
 
-    <!-- Contenido -->
+    <!-- Contenido principal -->
     <div class="content">
-        <!-- Inicio -->
+        <!-- Sección Inicio -->
         <section id="inicio" class="section active">
             <h1>Bienvenido</h1>
-            <p>Portal para descargar mundos de Roblox Studio.</p>
+            <p>Portal para descargar mundos creados en Roblox Studio.</p>
+            <p>Selecciona "Mundos" en el menú lateral para ver los mundos disponibles.</p>
+            <p>Selecciona "Configuración" para ver los requisitos del sistema.</p>
+        </section>
+
+        <!-- Sección Mundos -->
+        <section id="mundos" class="section">
+            <h1>Mundos Disponibles</h1>
+            <p>Descarga los mundos haciendo clic en el botón "Descargar".</p>
             
-            <div class="stats">
-                <div class="stat">
-                    <div class="num" id="total-mundos">1</div>
-                    <div class="label">Mundos</div>
-                </div>
-                <div class="stat">
-                    <div class="num" id="total-descargas">0</div>
-                    <div class="label">Descargas</div>
-                </div>
-            </div>
-            
-            <div class="config-item">
-                <h3>¿Cómo descargar?</h3>
-                <p>1. Ve a "Mundos"</p>
-                <p>2. Elige un mundo</p>
-                <p>3. Haz clic en "Descargar"</p>
-                <p>4. Abre con Roblox Studio</p>
+            <div class="world-container" id="worlds-container">
+                <!-- Los mundos se cargan aquí con JavaScript -->
             </div>
         </section>
 
-        <!-- Mundos -->
-        <section id="descargas" class="section">
-            <h1>Mundos Descargables</h1>
-            <p>Haz clic en descargar para obtener el archivo .rbxl</p>
-            
-            <div id="lista-mundos">
-                <!-- Los mundos se cargan aquí -->
-            </div>
-        </section>
-
-        <!-- Configuración -->
+        <!-- Sección Configuración -->
         <section id="config" class="section">
             <h1>Configuración</h1>
+            <p>Requisitos y configuración recomendada.</p>
             
             <div class="config-item">
-                <h3>Requisitos del Sistema</h3>
-                <p>• Roblox Studio instalado</p>
-                <p>• Windows 10/11 (64-bit)</p>
-                <p>• 4GB RAM mínimo</p>
-                <p>• 2GB espacio libre</p>
+                <h3>Requisitos Mínimos</h3>
+                <ul>
+                    <li>Roblox Studio instalado</li>
+                    <li>Windows 10/11 64-bit</li>
+                    <li>4GB de RAM</li>
+                    <li>2GB de espacio en disco</li>
+                    <li>Conexión a Internet</li>
+                </ul>
             </div>
             
             <div class="config-item">
                 <h3>Configuración Recomendada</h3>
-                <p>• Windows 11</p>
-                <p>• 8GB RAM o más</p>
-                <p>• Gráficos dedicados</p>
-                <p>• SSD para mejor rendimiento</p>
+                <ul>
+                    <li>Windows 11</li>
+                    <li>8GB de RAM o más</li>
+                    <li>Gráficos dedicados</li>
+                    <li>SSD para mejor rendimiento</li>
+                    <li>Conexión estable a Internet</li>
+                </ul>
             </div>
             
             <div class="config-item">
-                <h3>Solución de Problemas</h3>
-                <p>• Si no se abre: Verifica que Roblox Studio esté instalado</p>
-                <p>• Si es lento: Cierra otros programas</p>
-                <p>• Si hay error: Reinstala Roblox Studio</p>
+                <h3>Instrucciones de Uso</h3>
+                <ul>
+                    <li>Descarga el archivo .rbxl</li>
+                    <li>Abre Roblox Studio</li>
+                    <li>Ve a "Archivo" → "Abrir"</li>
+                    <li>Selecciona el archivo descargado</li>
+                    <li>¡Listo! Puedes editarlo</li>
+                </ul>
             </div>
         </section>
     </div>
