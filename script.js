@@ -7,7 +7,7 @@ const mundos = [
         id: 1,
         nombre: "Custom Chat System",
         archivo: "CustomChatSystem.rbxl",  // Nombre exacto del archivo en /worlds/
-        descripcion: "Sistema de chat personalizado para Roblox con comandos y configuración avanzada.",
+        descripcion: "Este sistema de chat es completamente personalizable y está diseñado para integrarse fácilmente en tus proyectos. Asegúrate de seguir las reglas proporcionadas para evitar errores o conflictos dentro del sistema.",
         tamano: "138 KB"  // CAMBIA ESTO AL TAMAÑO REAL DE TU ARCHIVO
     }
 ];
