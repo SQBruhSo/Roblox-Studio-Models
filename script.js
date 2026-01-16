@@ -2,10 +2,10 @@
 const mundos = [
     {
         id: 1,
-        titulo: "Ciudad Moderna",
-        archivo: "ciudad_moderna.rbxl",
-        descripcion: "Una ciudad completa con edificios, calles y vehículos. Perfecta para juegos de rol urbano.",
-        tamano: "12.5 MB",
+        titulo: "Custom Chat System",
+        archivo: "CustomChatSystem.rbxl",
+        descripcion: "Un sistema de chat customizado para que los jugadores no tengan que verifiarse. Y contiene un filtro que evita los insultos.",
+        tamano: "128 KB",
         fecha: "2025-01-16",
         descargas: 0
     },
