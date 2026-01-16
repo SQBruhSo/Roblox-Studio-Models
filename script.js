@@ -14,107 +14,23 @@ let currentSection = 'home';
 let downloads = JSON.parse(localStorage.getItem('rsm_downloads') || '{}');
 let settings = JSON.parse(localStorage.getItem('rsm_settings') || '{}');
 
-// Default settings (SIMPLIFICADO)
+// Default settings
 const defaultSettings = {
     theme: 'dark',
     fontSize: 16
 };
 
-// ===== INITIALIZE APP =====
-function initApp() {
-    console.log('🚀 Initializing RSM...');
-    
-    // Merge with default settings
-    settings = { ...defaultSettings, ...settings };
-    
-    // Apply saved settings
-    applySettings();
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Load models
-    loadModels(true);
-    
-    // Update stats
-    updateStats();
-    
-    console.log('✅ RSM initialized');
-}
-
-// ===== APPLY SETTINGS =====
-function applySettings() {
-    // Apply theme
-    if (settings.theme === 'light') {
-        document.body.classList.add('light-mode');
-        document.getElementById('theme-toggle').checked = true;
-    }
-    
-    // Apply font size
-    applyFontSize(settings.fontSize);
-}
-
-// ===== APPLY FONT SIZE =====
-function applyFontSize(size) {
-    // Validate size
-    size = Math.max(12, Math.min(24, size));
-    settings.fontSize = size;
-    
-    // Apply to CSS variable
-    document.documentElement.style.setProperty('--font-size', `${size}px`);
-    
-    // Update display
-    document.getElementById('font-size-value').textContent = `${size}px`;
-    
-    // Save settings
-    saveSettings();
-}
-
-// ===== SETUP EVENT LISTENERS =====
-function setupEventListeners() {
-    console.log('🔧 Setting up event listeners...');
-    
-    // Navigation
-    const menuLinks = document.querySelectorAll('.menu-link');
-    menuLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Update active
-            menuLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show section
-            const section = this.getAttribute('data-section');
-            showSection(section);
-        });
-    });
-    
-    // Theme toggle
-    document.getElementById('theme-toggle').addEventListener('change', function() {
-        if (this.checked) {
-            document.body.classList.add('light-mode');
-            settings.theme = 'light';
-        } else {
-            document.body.classList.remove('light-mode');
-            settings.theme = 'dark';
-        }
-        saveSettings();
-    });
-    
-    // Font size controls
-    document.getElementById('font-decrease').addEventListener('click', function() {
-        applyFontSize(settings.fontSize - 1);
-    });
-    
-    document.getElementById('font-increase').addEventListener('click', function() {
-        applyFontSize(settings.fontSize + 1);
-    });
-}
-
-// ===== SHOW SECTION =====
+// ===== SHOW SECTION (GLOBAL FUNCTION) =====
 function showSection(section) {
     console.log('📄 Showing section:', section);
+    
+    // Update menu
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Mark active link
+    document.querySelector(`.menu-link[onclick*="${section}"]`).classList.add('active');
     
     // Hide all sections
     document.querySelectorAll('.section').forEach(sec => {
@@ -132,13 +48,91 @@ function showSection(section) {
         
         // Load models if needed
         if (section === 'models') {
-            setTimeout(() => loadModels(), 10);
+            loadModels();
         }
         
         // Update stats if needed
         if (section === 'home') {
             updateStats();
         }
+    }
+    
+    return false; // Prevent default behavior
+}
+
+// ===== CHANGE FONT SIZE (GLOBAL FUNCTION) =====
+function changeFontSize(change) {
+    const newSize = settings.fontSize + change;
+    applyFontSize(newSize);
+}
+
+// ===== INITIALIZE APP =====
+function initApp() {
+    console.log('🚀 Initializing RSM...');
+    
+    // Merge with default settings
+    settings = { ...defaultSettings, ...settings };
+    
+    // Apply saved settings
+    applySettings();
+    
+    // Setup navigation
+    setupNavigation();
+    
+    // Load models
+    loadModels();
+    
+    // Update stats
+    updateStats();
+    
+    console.log('✅ RSM initialized');
+}
+
+// ===== APPLY SETTINGS =====
+function applySettings() {
+    // Apply theme
+    if (settings.theme === 'light') {
+        document.body.classList.add('light-mode');
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) themeToggle.checked = true;
+    }
+    
+    // Apply font size
+    applyFontSize(settings.fontSize);
+}
+
+// ===== APPLY FONT SIZE =====
+function applyFontSize(size) {
+    // Validate size
+    size = Math.max(12, Math.min(24, size));
+    settings.fontSize = size;
+    
+    // Apply to CSS variable
+    document.documentElement.style.setProperty('--font-size', `${size}px`);
+    
+    // Update display
+    const fontSizeValue = document.getElementById('font-size-value');
+    if (fontSizeValue) fontSizeValue.textContent = `${size}px`;
+    
+    // Save settings
+    saveSettings();
+}
+
+// ===== SETUP NAVIGATION =====
+function setupNavigation() {
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('light-mode');
+                settings.theme = 'light';
+            } else {
+                document.body.classList.remove('light-mode');
+                settings.theme = 'dark';
+            }
+            saveSettings();
+        });
     }
 }
 
@@ -249,14 +243,16 @@ function registerDownload(modelId) {
         setTimeout(() => loadModels(), 100);
     }
     
-    // Let the download proceed naturally
     return true;
 }
 
 // ===== UPDATE STATS =====
 function updateStats() {
     // Total models
-    document.getElementById('total-models').textContent = models.length;
+    const totalModelsEl = document.getElementById('total-models');
+    if (totalModelsEl) {
+        totalModelsEl.textContent = models.length;
+    }
     
     // Calculate total size
     let totalBytes = 0;
@@ -276,7 +272,10 @@ function updateStats() {
         }
     });
     
-    document.getElementById('total-size').textContent = formatSize(totalBytes);
+    const totalSizeEl = document.getElementById('total-size');
+    if (totalSizeEl) {
+        totalSizeEl.textContent = formatSize(totalBytes);
+    }
 }
 
 // ===== SAVE SETTINGS =====
@@ -285,7 +284,13 @@ function saveSettings() {
 }
 
 // ===== EXPORT FUNCTIONS =====
+window.showSection = showSection;
+window.changeFontSize = changeFontSize;
 window.registerDownload = registerDownload;
 
 // ===== START APP =====
-document.addEventListener('DOMContentLoaded', initApp);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
