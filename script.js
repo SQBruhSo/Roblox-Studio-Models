@@ -4,148 +4,111 @@ const models = [
         id: 1,
         name: "Custom Chat System",
         filename: "CustomChatSystem.rbxl",
-        description: "This chat system is fully customizable and designed to integrate easily into your projects. Make sure to follow the rules provided to avoid errors or conflicts within the system.",
-        size: null
+        description: "	This chat system is fully customizable and designed to integrate easily into your projects. Make sure to follow the rules provided to avoid errors or conflicts within the system.",
+        size: null,
+        category: "Game Systems",
+        addedDate: "2025-01-16"
     }
 ];
 
 // ===== APP STATE =====
 let currentSection = 'home';
 let downloads = JSON.parse(localStorage.getItem('rsm_downloads') || '{}');
-let settings = JSON.parse(localStorage.getItem('rsm_settings') || '{}');
+let modelsLoaded = false;
 
-// Default settings
-const defaultSettings = {
-    theme: 'dark',
-    fontSize: 16
-};
-
-// ===== GLOBAL FUNCTIONS =====
-function showSection(section) {
-    console.log('📄 Showing section:', section);
-    
-    // Update menu
-    document.querySelectorAll('.menu-link').forEach(link => {
-        link.classList.remove('active');
+// ===== CALCULAR ESTADÍSTICAS =====
+function calculateStats() {
+    // Total de descargas
+    let totalDownloads = 0;
+    Object.values(downloads).forEach(count => {
+        totalDownloads += count;
     });
     
-    // Mark active link
-    const activeLink = document.querySelector(`.menu-link[onclick*="${section}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
+    // Modelo más descargado
+    let topModel = "None";
+    let maxDownloads = 0;
+    
+    models.forEach(model => {
+        const modelDownloads = downloads[model.id] || 0;
+        if (modelDownloads > maxDownloads) {
+            maxDownloads = modelDownloads;
+            topModel = model.name;
+        }
+    });
+    
+    return {
+        totalDownloads,
+        topModel: maxDownloads > 0 ? topModel : "None"
+    };
+}
+
+// ===== FUNCTION TO SHOW SECTION =====
+function showSection(sectionId) {
+    console.log('Showing section:', sectionId);
+    
+    // Update current section
+    currentSection = sectionId;
     
     // Hide all sections
-    document.querySelectorAll('.section').forEach(sec => {
-        sec.classList.remove('active');
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
     });
     
     // Show selected section
-    const target = document.getElementById(section);
-    if (target) {
-        target.classList.add('active');
-        currentSection = section;
-        
-        // Update title
-        document.title = `RSM - ${section.charAt(0).toUpperCase() + section.slice(1)}`;
-        
-        // Load models if needed
-        if (section === 'models') {
-            loadModels();
-        }
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
     }
     
-    return false;
-}
-
-function changeFontSize(change) {
-    const newSize = settings.fontSize + change;
-    applyFontSize(newSize);
-}
-
-function registerDownload(modelId) {
-    console.log('⬇️ Downloading model:', modelId);
+    // Update active menu
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
     
-    // Count download
-    if (!downloads[modelId]) downloads[modelId] = 0;
-    downloads[modelId]++;
+    // Find and activate the corresponding menu item
+    document.querySelector(`.menu-item[data-section="${sectionId}"]`).classList.add('active');
     
-    // Save
-    localStorage.setItem('rsm_downloads', JSON.stringify(downloads));
+    // Update title
+    document.title = `RSM - ${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`;
     
-    // Update model display
-    if (currentSection === 'models') {
-        setTimeout(() => loadModels(), 100);
+    // Load models if necessary (only once)
+    if (sectionId === 'models' && !modelsLoaded) {
+        loadModels();
+        modelsLoaded = true;
     }
     
-    return true;
+    // Update statistics if necessary
+    if (sectionId === 'home') {
+        updateStats();
+    }
 }
 
 // ===== INITIALIZE APP =====
 function initApp() {
     console.log('🚀 Initializing RSM...');
     
-    // Merge with default settings
-    settings = { ...defaultSettings, ...settings };
-    
-    // Apply saved settings
-    applySettings();
-    
     // Setup navigation
     setupNavigation();
     
-    // Load models
-    loadModels();
+    // Update statistics
+    updateStats();
     
     console.log('✅ RSM initialized');
 }
 
-// ===== APPLY SETTINGS =====
-function applySettings() {
-    // Apply theme
-    if (settings.theme === 'light') {
-        document.body.classList.add('light-mode');
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) themeToggle.checked = true;
-    }
-    
-    // Apply font size
-    applyFontSize(settings.fontSize);
-}
-
-// ===== APPLY FONT SIZE =====
-function applyFontSize(size) {
-    // Validate size
-    size = Math.max(12, Math.min(24, size));
-    settings.fontSize = size;
-    
-    // Apply to CSS variable
-    document.documentElement.style.setProperty('--font-size', `${size}px`);
-    
-    // Update display
-    const fontSizeValue = document.getElementById('font-size-value');
-    if (fontSizeValue) fontSizeValue.textContent = `${size}px`;
-    
-    // Save settings
-    saveSettings();
-}
-
 // ===== SETUP NAVIGATION =====
 function setupNavigation() {
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.body.classList.add('light-mode');
-                settings.theme = 'light';
-            } else {
-                document.body.classList.remove('light-mode');
-                settings.theme = 'dark';
+    // Add events to menu items
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('data-section');
+            if (sectionId) {
+                showSection(sectionId);
             }
-            saveSettings();
         });
-    }
+    });
 }
 
 // ===== LOAD MODELS =====
@@ -153,7 +116,7 @@ async function loadModels() {
     const container = document.getElementById('models-container');
     
     if (!container) {
-        console.error('❌ No container found!');
+        console.error('❌ Models container not found!');
         return;
     }
     
@@ -175,6 +138,7 @@ async function loadModels() {
             const size = await getFileSize(`worlds/${model.filename}`);
             model.size = size;
         } catch (error) {
+            console.log('Error getting size:', error);
             model.size = 'Unknown';
         }
         
@@ -188,6 +152,7 @@ async function loadModels() {
             <h3>${model.name}</h3>
             <p>${model.description}</p>
             <div class="model-info">
+                <span><strong>Category:</strong> ${model.category}</span>
                 <span><strong>Size:</strong> ${model.size || 'Loading...'}</span>
                 <span><strong>Downloads:</strong> ${downloadCount}</span>
                 <span><strong>Format:</strong> .rbxl</span>
@@ -216,6 +181,7 @@ async function getFileSize(url) {
         }
         return 'Unknown';
     } catch (error) {
+        console.error('Error getting file size:', error);
         return 'Unknown';
     }
 }
@@ -236,19 +202,53 @@ function formatSize(bytes) {
     return `${size.toFixed(1)} ${units[unitIndex]}`;
 }
 
-// ===== SAVE SETTINGS =====
-function saveSettings() {
-    localStorage.setItem('rsm_settings', JSON.stringify(settings));
+// ===== REGISTER DOWNLOAD =====
+function registerDownload(modelId) {
+    console.log('⬇️ Downloading model:', modelId);
+    
+    // Count download
+    if (!downloads[modelId]) downloads[modelId] = 0;
+    downloads[modelId]++;
+    
+    // Save
+    localStorage.setItem('rsm_downloads', JSON.stringify(downloads));
+    
+    // Update statistics
+    updateStats();
+    
+    // Reload models to update counter
+    if (currentSection === 'models') {
+        setTimeout(() => {
+            loadModels();
+        }, 100);
+    }
+    
+    return true;
 }
 
-// ===== EXPORT FUNCTIONS =====
-window.showSection = showSection;
-window.changeFontSize = changeFontSize;
-window.registerDownload = registerDownload;
-
-// ===== START APP =====
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-} else {
-    initApp();
+// ===== UPDATE STATISTICS =====
+function updateStats() {
+    // Total models
+    const totalModelsElement = document.getElementById('total-models');
+    if (totalModelsElement) {
+        totalModelsElement.textContent = models.length;
+    }
+    
+    // Calculate and display other stats
+    const stats = calculateStats();
+    
+    // Total downloads
+    const totalDownloadsElement = document.getElementById('total-downloads');
+    if (totalDownloadsElement) {
+        totalDownloadsElement.textContent = stats.totalDownloads;
+    }
+    
+    // Top model
+    const topModelElement = document.getElementById('top-model');
+    if (topModelElement) {
+        topModelElement.textContent = stats.topModel;
+    }
 }
+
+// ===== START APP WHEN DOM IS READY =====
+document.addEventListener('DOMContentLoaded', initApp);
